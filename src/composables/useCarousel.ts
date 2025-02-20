@@ -43,7 +43,7 @@ export const useCarousel = (data: { id: number; download_url: string }[]) => {
 			if (container.value) {
 			container.value.scrollTo({ left: 0, behavior: "auto" });
 			}
-		 }, 300); // Wait for the smooth scroll to finish
+		}, 300);
 	}
 	};
 
@@ -84,18 +84,24 @@ export const useCarousel = (data: { id: number; download_url: string }[]) => {
 	activeIndex.value = index;
 	};
 
-	// Set the active foto when clicked
+	// Set the active foto when clicked add/delete
 	const setActiveFoto = (id: number) => {
-		activeFotoId.value = id; 
+		activeFotoId.value = id;
 		const selectedFoto = data?.value.find(foto => foto.id === id);
-		if (selectedFoto) {
-			const alreadyExists = selectedStore.selected.items.some(item => item.id === id);
-			if (!alreadyExists) {
-				selectedStore.selected.items.push(selectedFoto);
-			}
-		};
-		console.log(selectedStore.selected.items)
-	}
+		if (!selectedFoto) {
+			console.error("Photo not found in data array.");
+			return;
+		}
+		const itemIndex = selectedStore.selected.items.findIndex(item => item.id === id);
+		if (itemIndex === -1) {
+			// add
+			selectedStore.selected.items = [...selectedStore.selected.items, selectedFoto];
+		} else {
+			// remove
+			selectedStore.selected.items = selectedStore.selected.items.filter(item => item.id !== id);
+		}
+		console.log("Selected Items:", selectedStore.selected.items);
+	};
 
 	// Watch for window resize
 	watch(windowWidth, () => {
